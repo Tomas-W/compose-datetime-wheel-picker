@@ -42,6 +42,7 @@ internal fun CJKWheelDatePicker(
   textStyle: TextStyle = MaterialTheme.typography.titleMedium,
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
+  hapticTickConfig: HapticTickConfig = HapticTickConfig(),
   onSnappedDate: (snappedDate: SnappedDate) -> Int? = { _ -> null }
 ) {
   val currentLocale = Locale.current
@@ -87,6 +88,7 @@ internal fun CJKWheelDatePicker(
               selectorProperties = WheelPickerDefaults.selectorProperties(
                 enabled = false
               ),
+              hapticTickConfig = hapticTickConfig,
               startIndex = dayOfMonths.find { it.value == startDate.day }?.index ?: 0,
               onScrollFinished = { snappedIndex ->
                 val newDayOfMonth = dayOfMonths.find { it.index == snappedIndex }?.value
@@ -131,6 +133,7 @@ internal fun CJKWheelDatePicker(
               selectorProperties = WheelPickerDefaults.selectorProperties(
                 enabled = false
               ),
+              hapticTickConfig = hapticTickConfig,
               startIndex = months.find { it.value == startDate.month.number }?.index ?: 0,
               onScrollFinished = { snappedIndex ->
                 val newMonth = months.find { it.index == snappedIndex }?.value
@@ -175,6 +178,7 @@ internal fun CJKWheelDatePicker(
                 selectorProperties = WheelPickerDefaults.selectorProperties(
                   enabled = false
                 ),
+                hapticTickConfig = hapticTickConfig,
                 startIndex = years.find { it.value == startDate.year }?.index ?: 0,
                 onScrollFinished = { snappedIndex ->
                   val newYear = years.find { it.index == snappedIndex }?.value

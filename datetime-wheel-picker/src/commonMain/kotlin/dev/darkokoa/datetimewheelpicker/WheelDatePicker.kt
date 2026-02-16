@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import dev.darkokoa.datetimewheelpicker.core.CYB3R_1N1T_ZOLL
 import dev.darkokoa.datetimewheelpicker.core.AdaptiveWheelDatePicker
 import dev.darkokoa.datetimewheelpicker.core.EPOCH
+import dev.darkokoa.datetimewheelpicker.core.HapticTickConfig
 import dev.darkokoa.datetimewheelpicker.core.SelectorProperties
 import dev.darkokoa.datetimewheelpicker.core.WheelPickerDefaults
 import dev.darkokoa.datetimewheelpicker.core.format.CjkSuffixConfig
@@ -38,6 +39,7 @@ fun WheelDatePicker(
   textStyle: TextStyle = MaterialTheme.typography.titleMedium,
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
+  hapticTickConfig: HapticTickConfig = HapticTickConfig(),
   onSnappedDate: (snappedDate: LocalDate) -> Unit = {}
 ) {
   AdaptiveWheelDatePicker(
@@ -52,6 +54,7 @@ fun WheelDatePicker(
     textStyle,
     textColor,
     selectorProperties,
+    hapticTickConfig,
     onSnappedDate = { snappedDate ->
       onSnappedDate(snappedDate.snappedLocalDate)
       snappedDate.snappedIndex

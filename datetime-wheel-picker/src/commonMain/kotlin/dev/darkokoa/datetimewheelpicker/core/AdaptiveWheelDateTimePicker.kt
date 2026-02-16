@@ -42,6 +42,7 @@ internal fun AdaptiveWheelDateTimePicker(
   textStyle: TextStyle = MaterialTheme.typography.titleMedium,
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
+  hapticTickConfig: HapticTickConfig = HapticTickConfig(),
   onSnappedDateTime: (snappedDateTime: SnappedDateTime) -> Int? = { _ -> null }
 ) {
 
@@ -75,6 +76,7 @@ internal fun AdaptiveWheelDateTimePicker(
         selectorProperties = WheelPickerDefaults.selectorProperties(
           enabled = false
         ),
+        hapticTickConfig = hapticTickConfig,
         onSnappedDate = { snappedDate ->
 
           val newDateTime = when (snappedDate) {
@@ -128,6 +130,7 @@ internal fun AdaptiveWheelDateTimePicker(
         selectorProperties = WheelPickerDefaults.selectorProperties(
           enabled = false
         ),
+        hapticTickConfig = hapticTickConfig,
         onSnappedTime = { snappedTime, timeFormat ->
 
           val newDateTime = when (snappedTime) {

@@ -32,6 +32,7 @@ internal fun AdaptiveWheelDatePicker(
   textStyle: TextStyle = MaterialTheme.typography.titleMedium,
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
+  hapticTickConfig: HapticTickConfig = HapticTickConfig(),
   onSnappedDate: (snappedDate: SnappedDate) -> Int? = { _ -> null }
 ) {
   if (Locale.current.isCjkLanguage) {
@@ -47,6 +48,7 @@ internal fun AdaptiveWheelDatePicker(
       textStyle,
       textColor,
       selectorProperties,
+      hapticTickConfig,
       onSnappedDate
     )
   } else {
@@ -62,6 +64,7 @@ internal fun AdaptiveWheelDatePicker(
       textStyle,
       textColor,
       selectorProperties,
+      hapticTickConfig,
       onSnappedDate
     )
   }

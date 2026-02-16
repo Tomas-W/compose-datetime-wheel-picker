@@ -17,8 +17,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
 
 @Composable
@@ -29,18 +31,47 @@ internal fun WheelPicker(
   rowCount: Int,
   size: DpSize = DpSize(128.dp, 128.dp),
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
+  hapticTickConfig: HapticTickConfig = HapticTickConfig(),
   onScrollFinished: (snappedIndex: Int) -> Int? = { null },
   content: @Composable LazyItemScope.(index: Int) -> Unit,
 ) {
   val lazyListState = rememberLazyListState(startIndex)
   val flingBehavior = rememberSnapFlingBehavior(lazyListState)
   val isScrollInProgress = lazyListState.isScrollInProgress
+  val hapticFeedback = LocalHapticFeedback.current
+  var wasScrolling by remember { mutableStateOf(false) }
 
-  LaunchedEffect(isScrollInProgress, count) {
+  LaunchedEffect(lazyListState, hapticTickConfig) {
+    var previousSnappedIndex = -1
+    snapshotFlow {
+      if (lazyListState.isScrollInProgress) {
+        calculateSnappedItemIndex(lazyListState)
+      } else -1
+    }.collectLatest { snappedIndex ->
+      if (snappedIndex >= 0 && snappedIndex != previousSnappedIndex) {
+        hapticTickConfig.tickFeedback?.let {
+          hapticFeedback.performHapticFeedback(it)
+        }
+        previousSnappedIndex = snappedIndex
+      } else if (snappedIndex < 0) {
+        previousSnappedIndex = calculateSnappedItemIndex(lazyListState)
+      }
+    }
+  }
+
+  LaunchedEffect(isScrollInProgress, count, hapticTickConfig) {
     if (!isScrollInProgress) {
+      if (wasScrolling) {
+        hapticTickConfig.confirmationFeedback?.let {
+          hapticFeedback.performHapticFeedback(it)
+        }
+      }
+      wasScrolling = false
       onScrollFinished(calculateSnappedItemIndex(lazyListState))?.let {
         lazyListState.scrollToItem(it)
       }
+    } else {
+      wasScrolling = true
     }
   }
 

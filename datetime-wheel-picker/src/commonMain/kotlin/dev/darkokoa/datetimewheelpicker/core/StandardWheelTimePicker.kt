@@ -38,6 +38,7 @@ internal fun StandardWheelTimePicker(
   textStyle: TextStyle = MaterialTheme.typography.titleMedium,
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
+  hapticTickConfig: HapticTickConfig = HapticTickConfig(),
   onSnappedTime: (snappedTime: SnappedTime, timeFormat: TimeFormat) -> Int? = { _, _ -> null },
 ) {
 
@@ -84,6 +85,7 @@ internal fun StandardWheelTimePicker(
         selectorProperties = WheelPickerDefaults.selectorProperties(
           enabled = false
         ),
+        hapticTickConfig = hapticTickConfig,
         onScrollFinished = { snappedIndex ->
 
           val newHour = if (timeFormatter.timeFormat == TimeFormat.HOUR_24) {
@@ -149,6 +151,7 @@ internal fun StandardWheelTimePicker(
         selectorProperties = WheelPickerDefaults.selectorProperties(
           enabled = false
         ),
+        hapticTickConfig = hapticTickConfig,
         onScrollFinished = { snappedIndex ->
 
           val newMinute = minutes.find { it.index == snappedIndex }?.value
@@ -203,6 +206,7 @@ internal fun StandardWheelTimePicker(
           selectorProperties = WheelPickerDefaults.selectorProperties(
             enabled = false
           ),
+          hapticTickConfig = hapticTickConfig,
           onScrollFinished = { snappedIndex ->
 
             val newAmPm = amPms.find {
