@@ -40,6 +40,7 @@ internal fun StandardWheelDatePicker(
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
   hapticTickConfig: HapticTickConfig = HapticTickConfig(),
+  onCenterDateChange: (LocalDate) -> Unit = {},
   onSnappedDate: (snappedDate: SnappedDate) -> Int? = { _ -> null }
 ) {
   val itemCount = if (yearsRange == null) 2 else 3
@@ -53,6 +54,29 @@ internal fun StandardWheelDatePicker(
   val months = rememberFormattedMonths(size.width, dateFormatter)
 
   val years = rememberFormattedYears(yearsRange, dateFormatter)
+
+  var liveDayIndex by remember {
+    mutableStateOf(dayOfMonths.find { it.value == startDate.day }?.index ?: 0)
+  }
+  var liveMonthIndex by remember {
+    mutableStateOf(months.find { it.value == startDate.month.number }?.index ?: 0)
+  }
+  var liveYearIndex by remember {
+    mutableStateOf(years?.find { it.value == startDate.year }?.index ?: 0)
+  }
+
+  fun buildLiveDate(): LocalDate {
+    val year = years?.find { it.index == liveYearIndex }?.value ?: startDate.year
+    val month = months.find { it.index == liveMonthIndex }?.value ?: startDate.month.number
+    val dayValue = dayOfMonths.find { it.index == liveDayIndex }?.value ?: startDate.day
+    val lastDay = when (month) {
+      2 -> if (LocalDate(year, month, 1).isLeapYear) 29 else 28
+      4, 6, 9, 11 -> 30
+      else -> 31
+    }
+    val day = dayValue.coerceIn(1, lastDay)
+    return LocalDate(year, month, day)
+  }
 
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
     if (selectorProperties.enabled().value) {
@@ -81,6 +105,7 @@ internal fun StandardWheelDatePicker(
                 enabled = false
               ),
               hapticTickConfig = hapticTickConfig,
+              onCenterIndexChange = { liveDayIndex = it; onCenterDateChange(buildLiveDate()) },
               startIndex = dayOfMonths.find { it.value == startDate.day }?.index ?: 0,
               onScrollFinished = { snappedIndex ->
                 val newDayOfMonth = dayOfMonths.find { it.index == snappedIndex }?.value
@@ -123,6 +148,7 @@ internal fun StandardWheelDatePicker(
                 enabled = false
               ),
               hapticTickConfig = hapticTickConfig,
+              onCenterIndexChange = { liveMonthIndex = it; onCenterDateChange(buildLiveDate()) },
               startIndex = months.find { it.value == startDate.month.number }?.index ?: 0,
               onScrollFinished = { snappedIndex ->
                 val newMonth = months.find { it.index == snappedIndex }?.value
@@ -171,6 +197,7 @@ internal fun StandardWheelDatePicker(
                   enabled = false
                 ),
                 hapticTickConfig = hapticTickConfig,
+                onCenterIndexChange = { liveYearIndex = it; onCenterDateChange(buildLiveDate()) },
                 startIndex = years.find { it.value == startDate.year }?.index ?: 0,
                 onScrollFinished = { snappedIndex ->
                   val newYear = years.find { it.index == snappedIndex }?.value

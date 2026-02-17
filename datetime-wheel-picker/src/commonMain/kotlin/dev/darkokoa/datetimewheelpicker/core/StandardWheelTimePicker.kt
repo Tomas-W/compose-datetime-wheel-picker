@@ -39,6 +39,7 @@ internal fun StandardWheelTimePicker(
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
   hapticTickConfig: HapticTickConfig = HapticTickConfig(),
+  onCenterTimeChange: (LocalTime) -> Unit = {},
   onSnappedTime: (snappedTime: SnappedTime, timeFormat: TimeFormat) -> Int? = { _, _ -> null },
 ) {
 
@@ -57,6 +58,35 @@ internal fun StandardWheelTimePicker(
 
   var snappedAmPm by remember {
     mutableStateOf(amPms.find { it.value == amPmValueFromTime(startTime) } ?: amPms[0])
+  }
+
+  var liveHourIndex by remember {
+    mutableStateOf(
+      if (timeFormatter.timeFormat == TimeFormat.HOUR_24) {
+        hours.find { it.value == startTime.hour }?.index ?: 0
+      } else {
+        amPmHours.find { it.value == localTimeToAmPmHour(startTime) }?.index ?: 0
+      }
+    )
+  }
+  var liveMinuteIndex by remember {
+    mutableStateOf(minutes.find { it.value == startTime.minute }?.index ?: 0)
+  }
+  var liveAmPmIndex by remember {
+    mutableStateOf(amPms.indexOfFirst { it.value == amPmValueFromTime(startTime) }.takeIf { it >= 0 } ?: 0)
+  }
+
+  fun buildLiveTime(): LocalTime {
+    return if (timeFormatter.timeFormat == TimeFormat.HOUR_24) {
+      val hour = hours.find { it.index == liveHourIndex }?.value ?: 0
+      val minute = minutes.find { it.index == liveMinuteIndex }?.value ?: 0
+      LocalTime(hour, minute)
+    } else {
+      val amPm = amPms.getOrNull(liveAmPmIndex)?.value ?: AmPmValue.AM
+      val amPmHour = amPmHours.find { it.index == liveHourIndex }?.value ?: 12
+      val minute = minutes.find { it.index == liveMinuteIndex }?.value ?: 0
+      LocalTime(amPmHourToHour24(amPmHour, minute, amPm), minute)
+    }
   }
 
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -86,6 +116,7 @@ internal fun StandardWheelTimePicker(
           enabled = false
         ),
         hapticTickConfig = hapticTickConfig,
+        onCenterIndexChange = { liveHourIndex = it; onCenterTimeChange(buildLiveTime()) },
         onScrollFinished = { snappedIndex ->
 
           val newHour = if (timeFormatter.timeFormat == TimeFormat.HOUR_24) {
@@ -152,6 +183,7 @@ internal fun StandardWheelTimePicker(
           enabled = false
         ),
         hapticTickConfig = hapticTickConfig,
+        onCenterIndexChange = { liveMinuteIndex = it; onCenterTimeChange(buildLiveTime()) },
         onScrollFinished = { snappedIndex ->
 
           val newMinute = minutes.find { it.index == snappedIndex }?.value
@@ -207,6 +239,7 @@ internal fun StandardWheelTimePicker(
             enabled = false
           ),
           hapticTickConfig = hapticTickConfig,
+          onCenterIndexChange = { liveAmPmIndex = it; onCenterTimeChange(buildLiveTime()) },
           onScrollFinished = { snappedIndex ->
 
             val newAmPm = amPms.find {

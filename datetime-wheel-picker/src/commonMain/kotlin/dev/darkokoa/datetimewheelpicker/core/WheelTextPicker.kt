@@ -35,6 +35,7 @@ fun WheelTextPicker(
   color: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
   hapticTickConfig: HapticTickConfig = HapticTickConfig(),
+  onCenterIndexChange: (Int) -> Unit = {},
   onScrollFinished: (snappedIndex: Int) -> Int? = { null },
 ) {
   WheelPicker(
@@ -45,6 +46,7 @@ fun WheelTextPicker(
     rowCount = rowCount,
     selectorProperties = selectorProperties,
     hapticTickConfig = hapticTickConfig,
+    onCenterIndexChange = onCenterIndexChange,
     onScrollFinished = onScrollFinished
   ) { index ->
     Text(
@@ -72,6 +74,7 @@ internal fun WheelTextPickerWithSuffix(
   textToSuffixSpacing: Dp = 8.dp,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
   hapticTickConfig: HapticTickConfig = HapticTickConfig(),
+  onCenterIndexChange: (Int) -> Unit = {},
   onScrollFinished: (snappedIndex: Int) -> Int? = { null },
 ) {
   val textMeasurer = rememberTextMeasurer()
@@ -105,6 +108,7 @@ internal fun WheelTextPickerWithSuffix(
       rowCount = rowCount,
       selectorProperties = selectorProperties,
       hapticTickConfig = hapticTickConfig,
+      onCenterIndexChange = onCenterIndexChange,
       onScrollFinished = onScrollFinished
     ) { index ->
       Row(

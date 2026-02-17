@@ -33,6 +33,7 @@ fun WheelTimePicker(
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
   hapticTickConfig: HapticTickConfig = HapticTickConfig(),
+  onCenterTimeChange: (LocalTime) -> Unit = {},
   onSnappedTime: (snappedTime: LocalTime) -> Unit = {},
 ) {
   StandardWheelTimePicker(
@@ -47,6 +48,7 @@ fun WheelTimePicker(
     textColor,
     selectorProperties,
     hapticTickConfig,
+    onCenterTimeChange,
     onSnappedTime = { snappedTime, _ ->
       onSnappedTime(snappedTime.snappedLocalTime)
       snappedTime.snappedIndex

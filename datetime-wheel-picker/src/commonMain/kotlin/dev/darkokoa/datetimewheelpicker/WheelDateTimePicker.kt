@@ -43,6 +43,7 @@ fun WheelDateTimePicker(
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
   hapticTickConfig: HapticTickConfig = HapticTickConfig(),
+  onCenterDateTimeChange: (LocalDateTime) -> Unit = {},
   onSnappedDateTime: (snappedDateTime: LocalDateTime) -> Unit = {}
 ) {
   AdaptiveWheelDateTimePicker(
@@ -59,6 +60,7 @@ fun WheelDateTimePicker(
     textColor,
     selectorProperties,
     hapticTickConfig,
+    onCenterDateTimeChange,
     onSnappedDateTime = { snappedDateTime ->
       onSnappedDateTime(snappedDateTime.snappedLocalDateTime)
       snappedDateTime.snappedIndex

@@ -32,6 +32,7 @@ internal fun WheelPicker(
   size: DpSize = DpSize(128.dp, 128.dp),
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
   hapticTickConfig: HapticTickConfig = HapticTickConfig(),
+  onCenterIndexChange: (Int) -> Unit = {},
   onScrollFinished: (snappedIndex: Int) -> Int? = { null },
   content: @Composable LazyItemScope.(index: Int) -> Unit,
 ) {
@@ -40,9 +41,13 @@ internal fun WheelPicker(
   val isScrollInProgress = lazyListState.isScrollInProgress
   val hapticFeedback = LocalHapticFeedback.current
   var wasScrolling by remember { mutableStateOf(false) }
+  val onCenterIndexChangeUpdated = rememberUpdatedState(onCenterIndexChange)
 
   LaunchedEffect(lazyListState, hapticTickConfig) {
     var previousSnappedIndex = -1
+    val initialIndex = calculateSnappedItemIndex(lazyListState)
+    previousSnappedIndex = initialIndex
+    onCenterIndexChangeUpdated.value(initialIndex)
     snapshotFlow {
       if (lazyListState.isScrollInProgress) {
         calculateSnappedItemIndex(lazyListState)
@@ -52,6 +57,7 @@ internal fun WheelPicker(
         hapticTickConfig.tickFeedback?.let {
           hapticFeedback.performHapticFeedback(it)
         }
+        onCenterIndexChangeUpdated.value(snappedIndex)
         previousSnappedIndex = snappedIndex
       } else if (snappedIndex < 0) {
         previousSnappedIndex = calculateSnappedItemIndex(lazyListState)
@@ -61,13 +67,15 @@ internal fun WheelPicker(
 
   LaunchedEffect(isScrollInProgress, count, hapticTickConfig) {
     if (!isScrollInProgress) {
+      val finalIndex = calculateSnappedItemIndex(lazyListState)
+      onCenterIndexChangeUpdated.value(finalIndex)
       if (wasScrolling) {
         hapticTickConfig.confirmationFeedback?.let {
           hapticFeedback.performHapticFeedback(it)
         }
       }
       wasScrolling = false
-      onScrollFinished(calculateSnappedItemIndex(lazyListState))?.let {
+      onScrollFinished(finalIndex)?.let {
         lazyListState.scrollToItem(it)
       }
     } else {

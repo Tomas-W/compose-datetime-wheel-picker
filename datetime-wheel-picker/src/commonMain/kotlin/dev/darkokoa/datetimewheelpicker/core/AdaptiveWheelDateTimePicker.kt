@@ -22,6 +22,7 @@ import dev.darkokoa.datetimewheelpicker.core.format.TimeFormatter
 import dev.darkokoa.datetimewheelpicker.core.format.dateFormatter
 import dev.darkokoa.datetimewheelpicker.core.format.timeFormatter
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.number
 
 @Composable
@@ -43,10 +44,13 @@ internal fun AdaptiveWheelDateTimePicker(
   textColor: Color = LocalContentColor.current,
   selectorProperties: SelectorProperties = WheelPickerDefaults.selectorProperties(),
   hapticTickConfig: HapticTickConfig = HapticTickConfig(),
+  onCenterDateTimeChange: (LocalDateTime) -> Unit = {},
   onSnappedDateTime: (snappedDateTime: SnappedDateTime) -> Int? = { _ -> null }
 ) {
 
   var snappedDateTime by remember { mutableStateOf(startDateTime.truncatedTo(ChronoUnit.MINUTES)) }
+  var liveDate by remember { mutableStateOf(startDateTime.date) }
+  var liveTime by remember { mutableStateOf<LocalTime>(startDateTime.time) }
 
   val yearTexts = remember(yearsRange) { yearsRange?.map { it.toString() } ?: listOf() }
 
@@ -77,6 +81,7 @@ internal fun AdaptiveWheelDateTimePicker(
           enabled = false
         ),
         hapticTickConfig = hapticTickConfig,
+        onCenterDateChange = { liveDate = it; onCenterDateTimeChange(LocalDateTime(liveDate, liveTime)) },
         onSnappedDate = { snappedDate ->
 
           val newDateTime = when (snappedDate) {
@@ -131,6 +136,7 @@ internal fun AdaptiveWheelDateTimePicker(
           enabled = false
         ),
         hapticTickConfig = hapticTickConfig,
+        onCenterTimeChange = { liveTime = it; onCenterDateTimeChange(LocalDateTime(liveDate, liveTime)) },
         onSnappedTime = { snappedTime, timeFormat ->
 
           val newDateTime = when (snappedTime) {
